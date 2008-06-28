@@ -20,13 +20,13 @@ $anova->levene_test()->dump(title => "Levene's test for equality of variances");
 # This prints: F(1, 38) = 4.87100593921132, p = 0.0334251996755789
 # Being significantly different by this test ...
 
-print "\n\trequire Statistics::FisherPitman;\n\tmy \$fishpit = Statistics::FisherPitman->new();\n\t\$fishpit->load_data({dist1 => [\@dist1], dist2 => [\@dist2]});\n\t\$fishpit->test(resamplings => 10000)->dump(title => \"Fisher-Pitman test of difference\");\n\n";
-require Statistics::FisherPitman;
+print "\n\trequire Statistics::FisherPitman;\n\tmy \$fishpit = Statistics::FisherPitman->new();\n\t\$fishpit->load_data({dist1 => [\@dist1], dist2 => [\@dist2]});\n\t\$fishpit->test(resamplings => 10000)->dump(title => \"Fisher-Pitman test of difference:\", conf_int => 1, p_precision => 3);\n\n";
+use Statistics::FisherPitman .02;
 my $fishpit = Statistics::FisherPitman->new();
 $fishpit->load_data({dist1 => \@dist1, dist2 => \@dist2});
 $| = 1; # this could take a little while
-$fishpit->test(resamplings => 10000)->dump(title => "Fisher-Pitman test of difference");
-# This prints: T = 56062045.0525, p = 0.0145
+$fishpit->test(resamplings => 10000)->dump(title => "Fisher-Pitman test of difference:", conf_int => 1, p_precision => 3);
+# This prints, e.g: T = 56062045.0525, p = 0.0145
 print "\n\nHow did the means differ?\n";
  
 print "District 1 mean = ", $fishpit->{'data'}->{'dist1'}->mean(), "\n";
