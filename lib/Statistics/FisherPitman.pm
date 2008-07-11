@@ -5,8 +5,9 @@ use strict;
 use warnings;
 use Carp qw(croak);
 use List::Util qw(sum);
+use Statistics::Descriptive;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 #-----------------------------------------------------------------------
 sub new {
@@ -62,10 +63,11 @@ sub test {
     my ($self, %args) = @_;
     my %data = ref $args{'data'} eq 'HASH' ? %{$args{'data'}} : ref $self->{'data'} eq 'HASH' ? %{$self->{'data'}} : croak 'No reference to a hash of data for performing ANOVA';
     my (%lens, @dat, %orig) = ();
+
     foreach (keys %data) {
+       $lens{$_} = $data{$_}->count or croak 'Empty data sent to Fisher-Pitman test';
        $orig{$_} = [$data{$_}->get_data];
        push @dat, $data{$_}->get_data;
-       $lens{$_} = $data{$_}->count or croak 'Empty data sent to Fisher-Pitman test';
     }
 
     my $T = _get_T(\%orig);
@@ -99,24 +101,33 @@ sub dump {
 #-----------------------------------------------------------------------        
     my ($self, %args) = @_;
     print "$args{'title'}\n" if $args{'title'};
-    print "T = $self->{'t_value'}";
+    print $self->string(%args);
+    print "\n";
+}
+
+#-----------------------------------------------------------------------        
+sub string {
+#-----------------------------------------------------------------------        
+    my ($self, %args) = @_;
+    my $str = '';
+    $str .= "T = $self->{'t_value'}";
     if (defined $self->{'p_value'}) {
-        print ', p = ';
-        print $args{'p_precision'} ? sprintf('%.' . $args{'p_precision'} . 'f', $self->{'p_value'}) : $self->{'p_value'};
+        $str .= ', p = ';
+        $str .= $args{'p_precision'} ? sprintf('%.' . $args{'p_precision'} . 'f', $self->{'p_value'}) : $self->{'p_value'};
         if ($args{'conf_int'}) {
-            print " (95% CI: ";
+            $str .= " (95% CI: ";
             if ($args{'p_precision'}) {
-                printf('%.' . $args{'p_precision'} . 'f', $self->{'conf_int'}->[0]);
-                print ', ';
-                printf('%.' . $args{'p_precision'} . 'f', $self->{'conf_int'}->[1]);
+                $str .= sprintf('%.' . $args{'p_precision'} . 'f', $self->{'conf_int'}->[0]);
+                $str .= ', ';
+                $str .= sprintf('%.' . $args{'p_precision'} . 'f', $self->{'conf_int'}->[1]);
             }
             else {
-                print join(" - ", @{$self->{'conf_int'}});
+                $str .= join(', ', @{$self->{'conf_int'}});
             }
-            print ')';
+            $str .= ')';
         }
     }
-    print "\n";
+    return $str;
 }
 
 sub _get_T {
@@ -162,7 +173,7 @@ Statistics::FisherPitman - Randomization-based alternative to one-way independen
 
 =head1 SYNOPSIS
 
- use Statistics::FisherPitman 0.02;
+ use Statistics::FisherPitman 0.03;
 
  my @dat1 = (qw/12 12 14 15 12 11 15/);
  my @dat2 = (qw/13 14 18 19 22 21 26/);
@@ -196,7 +207,9 @@ Class constructor; expects nothing.
 
 I<Alias>: C<load_data>
 
-Accepts either (1) a single C<name =E<gt> value> pair of a sample name, and a list (referenced or not) of data; or (2) a hash reference of named array references of data. The data are loaded into the class object by name, within a hash called C<data>, as L<Statistics::Descriptive::Full|Statistics::Descriptive> objects. So you could get at the data again, for instance, by going $fishpit->{'data'}->{'data1'}->get_data(). The names of the data can be arbitrary. Each call L<unload|unload>s any previous loads.
+Accepts either (1) a single C<name =E<gt> value> pair of a sample name, and a list (referenced or not) of data; or (2) a hash reference of named array references of data. The data are loaded into the class object by name, within a hash named C<data>, as L<Statistics::Descriptive::Full|Statistics::Descriptive> objects. So you can easily get at any descriptives for the groups you've loaded - e.g., $fishpit->{'data'}->{'aname'}->mean() - or you could get at the data again by going $fishpit->{'data'}->{'aname'}->get_data(); and so on. The names of the data are up to you.
+
+Each call L<unload|unload>s any previous loads.
 
 Returns the Statistics::FisherPitman object.
 
@@ -242,9 +255,15 @@ The class object is fed with the attributes I<t_value> and I<p_value>, and retur
 
 =head2 dump
 
- $fishpit->dump(title => 'A test of something', conf_int => 1|0, p_precision => digit)
+ $fishpit->dump(title => 'A test of something', conf_int => 1|0, p_precision => integer)
 
-Prints a line to STDOUT of the form I<T = t_value, p = p_value>. Above this string, a title can also be printed, by giving a value to the optional I<title> argument. The 95% confidence interval, and the precision of the p-value(s), can also be optionally dumped, as above.
+Prints a line to STDOUT of the form I<T = t_value, p = p_value>. Above this string, a title can also be printed, by giving a value to the optional I<title> argument. The 95% confidence interval, and the precision of the p-value(s), can also be optionally dumped, as above. Ends with a line-break, i.e., "\n".
+
+=head2 string
+
+ $fishpit->string(conf_int => 1|0, p_precision => integer)
+
+Returns a line of the form I<T = t_value, p = p_value>, to the precision specified (if any), and, optionally, with the confidence-interval for the p-value appended.
 
 =head1 EXAMPLE
 
@@ -252,20 +271,22 @@ This example is taken from Berry & Mielke (2002); see C<ex/fishpit.pl> in the in
 
 The following shows how the test would be performed with the present module; using a smaller number of resamplings produces much the same result. A test of equality of variances is also shown.
 
- my @dist1 = (qw/16.0 34.3 34.6 57.6 63.1 88.2 94.2 111.8 112.1 139.0 165.6 176.7 216.2 221.1 276.7 362.8 373.4 387.1 442.2 706.0/);
- my @dist2 = (qw/4.7 10.8 35.7 53.1 75.6 105.5 200.4 212.8 212.9 215.2 257.6 347.4 461.9 566.0 984.0 1040.0 1306.0 1908.0 3559.0 21679.0/);
+ my $data = {
+    dist1 => [qw/16.0 34.3 34.6 57.6 63.1 88.2 94.2 111.8 112.1 139.0 165.6 176.7 216.2 221.1 276.7 362.8 373.4 387.1 442.2 706.0/],
+    dist2 => [qw/4.7 10.8 35.7 53.1 75.6 105.5 200.4 212.8 212.9 215.2 257.6 347.4 461.9 566.0 984.0 1040.0 1306.0 1908.0 3559.0 21679.0/],
+ };
 
  # First test equality of variances:
  require Statistics::ANOVA;
  my $anova = Statistics::ANOVA->new();
- $anova->load_data({dist1 => \@dist1, dist2 => \@dist2});
+ $anova->load_data($data);
  $anova->levene_test()->dump();
  # This prints: F(1, 38) = 4.87100593921132, p = 0.0334251996755789
  # As this suggests significantly different variances ...
 
  require Statistics::FisherPitman;
  my $fishpit = Statistics::FisherPitman->new();
- $fishpit->load_data({dist1 => \@dist1, dist2 => \@dist2});
+ $fishpit->load_data($data);
  $| = 1; # this could take a little while
  $fishpit->test(resamplings => 10000)->dump(conf_int => 1, p_precision => 3);
  # This prints, e.g.: T = 56062045.0525, p = 0.014 (95% CI: 0.011, 0.016)
@@ -311,12 +332,11 @@ See CHANGES in installation distribution for subsequent updates.
 
 =over 4
 
-=item Copyright (c) 2008 Roderick Garton
+=item Copyright (c) 2006-2008 Roderick Garton
 
-rgarton@utas_DOT_edu_DOT_au
+rgarton AT cpan DOT org
 
-This program is free software. It may may be modified, used, copied, and redistributed at your own risk, and under the terms of the Perl Artistic License (see L<http://www.perl.com/perl/misc/Artistic.html>).
-Publicly redistributed modified versions must use a different name.
+This program is free software. This module is free software. It may be used, redistributed and/or modified under the stame terms as Perl-5.6.1 (or later) (see L<http://www.perl.com/perl/misc/Artistic.html>).
 
 =item Disclaimer
 

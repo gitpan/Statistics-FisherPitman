@@ -9,3 +9,6 @@ Revision history for Perl extension Statistics::FisherPitman.
     -cleaned up what happens upon dump if no resamplings were specified in test
     -and some POD clean-up - can't not document the <new> method
 
+0.03 
+    -added string method, in line with ANOVA, Sequences, and other Statistics modules
+    -use Statistics::Descriptive!
