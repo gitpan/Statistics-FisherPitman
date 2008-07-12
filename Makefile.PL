@@ -5,7 +5,10 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME              => 'Statistics::FisherPitman',
     VERSION_FROM      => 'lib/Statistics/FisherPitman.pm', # finds $VERSION
-    PREREQ_PM         => {List::Util => 1.18}, # e.g., Module::Name => 1.1
+    PREREQ_PM         => {
+	List::Util => 1.18,
+	Statistics::Descriptive => 2.6,
+	},
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Statistics/FisherPitman.pm', # retrieve abstract from module
        AUTHOR         => 'R. Garton <rgarton AT cpan DOT org>') : ()),

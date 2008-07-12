@@ -5,9 +5,9 @@ use strict;
 use warnings;
 use Carp qw(croak);
 use List::Util qw(sum);
-use Statistics::Descriptive;
+use Statistics::Descriptive 2.6;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 #-----------------------------------------------------------------------
 sub new {
@@ -173,7 +173,7 @@ Statistics::FisherPitman - Randomization-based alternative to one-way independen
 
 =head1 SYNOPSIS
 
- use Statistics::FisherPitman 0.03;
+ use Statistics::FisherPitman 0.04;
 
  my @dat1 = (qw/12 12 14 15 12 11 15/);
  my @dat2 = (qw/13 14 18 19 22 21 26/);
@@ -316,7 +316,7 @@ Do auto number of resamplings based on N possible permutations.
 
 Randomization procedure can always be improved.
 
-=head1 REVISION HISTORY
+=head1 REVISIONS
 
 =over 4
 
