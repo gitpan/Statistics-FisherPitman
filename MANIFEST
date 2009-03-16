@@ -1,7 +1,0 @@
-Changes
-Makefile.PL
-MANIFEST
-README
-t/Statistics-FisherPitman.t
-lib/Statistics/FisherPitman.pm
-ex/fishpit.pl
