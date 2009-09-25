@@ -1,0 +1,16 @@
+--- #YAML:1.0
+name:                Statistics-FisherPitman
+version:             0.033
+abstract:            Randomization-based alternative to one-way independent groups ANOVA; unequal variances okay
+license:             ~
+author:              
+    - Roderick Garton <rgarton@cpan.org>
+generated_by:        ExtUtils::MakeMaker version 6.42_01
+distribution_type:   module
+requires:     
+    List::Util:                    1.18
+    Statistics::Descriptive:       2.6
+    Test::More:                    0
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3
