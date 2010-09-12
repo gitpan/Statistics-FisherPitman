@@ -14,5 +14,5 @@ WriteMakefile(
         'Statistics::Descriptive' => 2.6,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Statistics-FisherPitman-0.033-*' },
+    clean               => { FILES => 'Statistics-FisherPitman-0.034-*' },
 );

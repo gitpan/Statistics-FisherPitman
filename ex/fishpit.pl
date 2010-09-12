@@ -17,7 +17,7 @@ require Statistics::ANOVA;
 my $anova = Statistics::ANOVA->new();
 $anova->load_data({dist1 => \@dist1, dist2 => \@dist2});
 $anova->levene_test()->dump(title => "Levene's test for equality of variances");
-# This prints: F(1, 38) = 4.87100593921132, p = 0.0334251996755789
+# This prints: F(1, 38) = 4.87100593921132, p = 0.0344251996755789
 # Being significantly different by this test ...
 
 print "\n\trequire Statistics::FisherPitman;\n\tmy \$fishpit = Statistics::FisherPitman->new();\n\t\$fishpit->load_data({dist1 => [\@dist1], dist2 => [\@dist2]});\n\t\$fishpit->test(resamplings => 10000)->dump(title => \"Fisher-Pitman test of difference:\", conf_int => 1, precision_p => 3);\n\n";

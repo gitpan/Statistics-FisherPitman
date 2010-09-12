@@ -12,7 +12,7 @@ my $builder = Module::Build->new(
         'List::Util' => 1.18,
         'Statistics::Descriptive' => 2.6,
     },
-    add_to_cleanup      => [ 'Statistics-FisherPitman-0.033-*' ],
+    add_to_cleanup      => [ 'Statistics-FisherPitman-0.034-*' ],
 );
 
 $builder->create_build_script();

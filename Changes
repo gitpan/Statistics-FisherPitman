@@ -3,7 +3,7 @@ Revision history for Perl extension Statistics::FisherPitman.
 0.03 
     -added string method, in line with ANOVA, Sequences, and other Statistics modules
     -use Statistics::Descriptive
-    -distribution issues up to .033
+    -distribution issues up to .034
 
 
 0.02 2007 Jun 28

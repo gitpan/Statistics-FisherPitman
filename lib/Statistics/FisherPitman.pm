@@ -7,7 +7,7 @@ use Carp qw(croak);
 use List::Util qw(sum);
 use Statistics::Descriptive;
 use vars qw($VERSION);
-$VERSION = 0.033;
+$VERSION = 0.034;
 
 =pod
 
@@ -17,7 +17,7 @@ Statistics::FisherPitman - Randomization-based alternative to one-way independen
 
 =head1 SYNOPSIS
 
- use Statistics::FisherPitman 0.033;
+ use Statistics::FisherPitman 0.034;
 
  my @dat1 = (qw/12 12 14 15 12 11 15/);
  my @dat2 = (qw/13 14 18 19 22 21 26/);
@@ -330,7 +330,7 @@ The following shows how the test would be performed with the present module; usi
  my $anova = Statistics::ANOVA->new();
  $anova->load_data($data);
  $anova->levene_test()->dump();
- # This prints: F(1, 38) = 4.87100593921132, p = 0.0334251996755789
+ # This prints: F(1, 38) = 4.87100593921132, p = 0.0344251996755789
  # As this suggests significantly different variances ...
 
  require Statistics::FisherPitman;
@@ -383,5 +383,9 @@ This program is free software. It may be used, redistributed and/or modified und
 To the maximum extent permitted by applicable law, the author of this module disclaims all warranties, either express or implied, including but not limited to implied warranties of merchantability and fitness for a particular purpose, with regard to the software and the accompanying documentation.
 
 =back
+
+=head1
+
+This ends documentation for a Perl implementation of the Fisher-Pitman permutation test alternative to one-way ANOVA.
 
 =cut
